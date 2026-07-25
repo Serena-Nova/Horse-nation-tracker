@@ -41,7 +41,7 @@
   }, 4000);
 </script>
 
-<script type="text/babel" data-presets="react">
+<script type="text/plain" id="app-source">
 const { useState, useEffect } = React;
 
 const DRESSUUR = ["BB", "B", "L1", "L2", "M1", "M2", "Z1", "Z2", "ZZ-Licht", "ZZ-Zwaar"];
@@ -338,6 +338,26 @@ function App() {
 
 document.getElementById("root").__mounted = true;
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+<script>
+  // Transformeer de JSX hierboven zelf, met de klassieke (browser-veilige) instelling —
+  // de standaardinstelling van recente Babel-versies genereert een import-statement dat
+  // niet werkt in een gewoon scriptje zonder build-systeem.
+  var source = document.getElementById("app-source").textContent;
+  try {
+    var compiled = Babel.transform(source, {
+      presets: [["react", { runtime: "classic" }]],
+    }).code;
+    var s = document.createElement("script");
+    s.textContent = compiled;
+    document.body.appendChild(s);
+  } catch (e) {
+    document.getElementById("root").innerHTML =
+      '<div style="font-family: -apple-system, sans-serif; padding: 24px; color: #b91c1c; ' +
+      'font-size: 14px; line-height: 1.6;"><strong>⚠️ Fout bij het compileren</strong><br/><br/>' +
+      String(e) + "</div>";
+  }
 </script>
 </body>
 </html>
